@@ -8,7 +8,7 @@ var connection = mysql.createConnection({
   port: 3306,
   user: "root",
   password: "password7",
-  database: "top_songsDB"
+  database: "employee_trackerDB"
 });
 
 connection.connect(function(err) {
@@ -35,6 +35,7 @@ function start(){
       }).then(function(answer){
         switch(answer.homeScreen){
             case "View All Employies By Department":
+                viewAllByDepartment();
                 break;
             case "View All Employees By Manager":
                 break;
@@ -51,5 +52,13 @@ function start(){
             default:
                 connection.end();
         }
+      });
+};
+
+function viewAllByDepartment(){
+    connection.query("SELECT * FROM department", function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        connection.end();
       });
 };
