@@ -25,22 +25,22 @@ function start(){
         message: "What would you like to do?",
         choices: [
         "View All Employees",
-        "View All Employees By Department", 
-        "View All Employees By Manager",
+        "View All Departments", 
+        "View All Roles",
         "Add Employee",
         "Remove Employee",
         "Update Employee Role",
-        "View All Roles",
         "EXIT"]
       }).then(function(answer){
         switch(answer.homeScreen){
             case "View All Employees":
                 allEmployees();
                 break;
-            case "View All Employies By Department":
+            case "View All Departments":
                 viewAllByDepartment();
                 break;
-            case "View All Employees By Manager":
+            case "View All Roles":
+                viewAllRoles();
                 break;
             case "Add Employee":
                 addEmployee();
@@ -49,8 +49,7 @@ function start(){
                 removeEmployee();
                 break;
             case "Update Employee Role":
-                break;
-            case "View All Roles":
+                updateRoles();
                 break;
             default:
                 connection.end();
@@ -71,13 +70,21 @@ function allEmployees(){
     });
 }
 
-// function viewAllByDepartment(){
-//     connection.query("SELECT * FROM department", function(err, res) {
-//         if (err) throw err;
-//         console.table(res);
-//         connection.end();
-//       });
-// };
+function viewAllByDepartment(){
+    connection.query("SELECT * FROM department", function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        start();
+    });
+};
+function viewAllRoles(){
+    connection.query("SELECT * FROM role LEFT JOIN department ON department.id = role.department_id", function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        start();
+    });
+};
+
 function addEmployee(){
     const nameOfEmployees = [];
     const role = [];
@@ -129,9 +136,6 @@ function addEmployee(){
             function(err, res) {
                 // console.log(res[0].id);
                 roleId.push(res[0].id);
-                // console.log("------");
-                // console.log(roleId[0]);
-                // console.log(employeeId[0]);
                 connection.query(
                     "INSERT INTO employee SET ?",
                     {
@@ -177,6 +181,55 @@ function removeEmployee(){
                     start();
                 }
             );
+        });
+    });
+};
+
+function updateRoles(){
+    const employeeNames = [];
+    const roles = [];
+    connection.query("SELECT * FROM employee", function(err, res) {
+        if (err) throw err;
+        for(var i = 0; i<res.length; i++){
+            employeeNames.push(res[i].first_name);
+        }
+        connection.query("SELECT * FROM role", function(err, res) {
+            if (err) throw err;
+            for(var i = 0; i<res.length; i++){
+                roles.push(res[i].title);
+            }
+            inquirer.prompt([
+                {
+                    type: "list",
+                    name: "update",
+                    message: "what employee do you want to update?",
+                    choices: employeeNames
+                },
+                {
+                    type: "list",
+                    name: "role",
+                    message: "what role do you want to change to?",
+                    choices: roles
+                }
+                ]).then(function(answer) {
+                    console.log(answer);
+                    connection.query("SELECT * FROM role WHERE title = ?",[answer.role],function(err, res) {
+                        //console.log(res[0].id);
+                        connection.query("UPDATE employee SET ? WHERE ?",
+                        [
+                            {
+                            role_id: res[0].id
+                            },
+                            {
+                            first_name: answer.update
+                            }
+                        ],
+                        function(err, res) {
+                            console.log("updated! \n");
+                            start();
+                        });
+                    });
+                });
         });
     });
 };
