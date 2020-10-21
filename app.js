@@ -27,6 +27,8 @@ function start(){
         "View All Employees",
         "View All Departments", 
         "View All Roles",
+        "Add department",
+        "Add role",
         "Add Employee",
         "Remove Employee",
         "Update Employee Role",
@@ -41,6 +43,12 @@ function start(){
                 break;
             case "View All Roles":
                 viewAllRoles();
+                break;
+            case "Add department":
+                addDepartment();
+                break;
+            case "Add role":
+                addRole();
                 break;
             case "Add Employee":
                 addEmployee();
@@ -84,7 +92,56 @@ function viewAllRoles(){
         start();
     });
 };
-
+function addDepartment(){
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "department",
+            message: "what department would you like to add?",
+        }
+        ]).then(function(answers) {
+            connection.query(
+            "INSERT INTO department SET ?",
+            {
+                name: answers.department
+            },
+            function(err, res) {
+            console.log(" department added!\n");
+            start();
+        });  
+    }); 
+}
+function addRole(){
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "role",
+            message: "what role would you like to add?",
+        },
+        {
+            type: "input",
+            name: "pay",
+            message: "what salary would you like to add?",
+        },
+        {
+            type: "input",
+            name: "depId",
+            message: "what department id does this have?",
+        },
+        ]).then(function(answers) {
+            connection.query(
+            "INSERT INTO role SET ?",
+            {
+                title: answers.role,
+                salary: answers.pay,
+                department_id: answers.depId
+            },
+            function(err, res) {
+            console.log("role added!\n");
+            start();
+        });  
+    }); 
+}
 function addEmployee(){
     const nameOfEmployees = [];
     const role = [];
