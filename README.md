@@ -2,7 +2,7 @@
 
 ## Description 
 
-
+This application is to have a terminal content management system which tracks a company's employees as well as role and managers. This project dynamically gets and updates information held in a database and displays it in a user friendly interface. 
 
 
 ## Table of Contents
@@ -21,6 +21,7 @@ node app.js.
 
 ## Usage 
 
+The usage of this application is to be able to manage employees and reference what their pay and what department they work onder as well as who their managers are. This project is a terminal application so the only code you need to run is node app.js. From there you will be prompted with questions in order to add and update employees.
    
 ## Credits
 
